@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -13,14 +12,15 @@ var rootCmd = &cobra.Command{
 	Use:   "shorty-api",
 	Short: "URL shortener API",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Usage()
+		if err := cmd.Usage(); err != nil {
+			logrus.Fatal(err)
+		}
 	},
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		logrus.Error(err)
-		os.Exit(1)
+		logrus.Fatal(err)
 	}
 }
 
@@ -48,8 +48,7 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if err := viper.ReadInConfig(); err != nil {
-		logrus.WithError(err).Error("unable to read config")
-		os.Exit(1)
+		logrus.WithError(err).Fatal("unable to read config")
 	}
 }
 
