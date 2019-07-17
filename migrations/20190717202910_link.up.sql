@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS "link" (
+    "id" BIGINT GENERATED ALWAYS AS IDENTITY,
+    "short" TEXT NOT NULL UNIQUE,
+    "long" TEXT NOT NULL,
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+    "deleted_at" TIMESTAMP WITH TIME ZONE NULL
+);
+
+CREATE INDEX IF NOT EXISTS "link_short_hash" ON "link" USING hash ("short");
