@@ -15,16 +15,19 @@ import (
 func Serve() {
 	logrus.Debug("server starting")
 
-	viper.SetDefault("api.public.port", "80")
+	viper.SetDefault("api.port", "80")
 
 	server := &http.Server{
-		Addr:    ":" + viper.GetString("api.public.port"),
-		Handler: public.GetRouter(),
+		Addr:         ":" + viper.GetString("api.port"),
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      public.GetRouter(),
 	}
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logrus.WithError(err).Error("unable to start server")
+			logrus.WithError(err).Fatal("unable to start server")
 		}
 	}()
 
@@ -36,7 +39,7 @@ func Serve() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		logrus.WithError(err).Error("unable to gracefully shut down server")
+		logrus.WithError(err).Fatal("unable to gracefully shut down server")
 	}
 
 	logrus.Debug("server shut down")
