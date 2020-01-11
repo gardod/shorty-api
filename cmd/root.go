@@ -24,24 +24,22 @@ func Execute() {
 	}
 }
 
-var (
-	configFile string
-	verbose    bool
-)
-
 func init() {
 	cobra.OnInitialize(initConfig, initLog)
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is config.json)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
+
+	rootCmd.PersistentFlags().String("config", "", "config file path")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "enable verbose output")
+	viper.BindPFlags(rootCmd.PersistentFlags())
 }
 
 func initConfig() {
-	if configFile != "" {
+	if configFile := viper.GetString("config"); configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
 		viper.SetConfigName("config")
+		viper.AddConfigPath("/etc/shorty/")
+		viper.AddConfigPath("$HOME/.shorty/")
 		viper.AddConfigPath("./config/")
-		viper.AddConfigPath("/etc/shorty")
 	}
 
 	viper.AutomaticEnv()
@@ -53,7 +51,7 @@ func initConfig() {
 }
 
 func initLog() {
-	if verbose {
+	if viper.GetBool("verbose") {
 		logrus.SetReportCaller(true)
 		logrus.SetLevel(logrus.DebugLevel)
 	} else {
