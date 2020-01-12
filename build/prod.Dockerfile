@@ -5,5 +5,6 @@ RUN go build -o /server
 
 FROM alpine:3.11
 WORKDIR /opt/shorty-api
+COPY ./internal/driver/postgres/migrations ./migrations
 COPY --from=build-env /server .
 ENTRYPOINT ["./server"]

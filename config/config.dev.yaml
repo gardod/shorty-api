@@ -1,2 +1,12 @@
 "api":
     "port": 9000
+"database":
+    "host": "postgres"
+    "port": 5432
+    "user": "shorty_user"
+    "password": "shorty_user"
+    "dbname": "shorty"
+    "sslmode": "disable"
+    "max_open_conns": 20
+    "max_idle_conns": 5
+    "conn_max_lifetime": 10

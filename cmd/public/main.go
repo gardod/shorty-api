@@ -15,6 +15,8 @@ import (
 func Serve() {
 	logrus.Debug("server starting")
 
+	initDrivers()
+
 	viper.SetDefault("api.port", "80")
 
 	server := &http.Server{
