@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Public",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "remotePath": "/go/src/github.com/gardod/shorty-api",
+            "port": 40000,
+            "host": "127.0.0.1",
+            "showLog": true
+        }
+    ]
+}
