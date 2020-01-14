@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -15,12 +16,12 @@ import (
 
 var pool *sql.DB
 
-func GetDB() *sql.DB {
-	// TODO: create a wrapper for transactions and bind it to context
-	return pool
+func GetClient(ctx context.Context) *Client {
+	// TODO: add client to context
+	return &Client{pool: pool}
 }
 
-func InitDB() {
+func InitClient() {
 	logrus.Info("setting up database")
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",

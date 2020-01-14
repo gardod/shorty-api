@@ -6,6 +6,6 @@ import (
 )
 
 func initDrivers() {
-	postgres.InitDB()
+	postgres.InitClient()
 	redis.InitClient()
 }
