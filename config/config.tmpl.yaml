@@ -10,3 +10,9 @@
     "max_open_conns": 0
     "max_idle_conns": 2
     "conn_max_lifetime": 0
+"cache":
+    "host": "127.0.0.1"
+    "port": 6379
+    "password": ""
+    "db": 0
+    "tls": false
