@@ -13,9 +13,9 @@ import (
 )
 
 func Serve() {
-	logrus.Debug("server starting")
-
 	initDrivers()
+
+	logrus.Info("server starting")
 
 	viper.SetDefault("api.port", "80")
 
@@ -44,5 +44,5 @@ func Serve() {
 		logrus.WithError(err).Fatal("unable to gracefully shut down server")
 	}
 
-	logrus.Debug("server shut down")
+	logrus.Info("server shut down")
 }

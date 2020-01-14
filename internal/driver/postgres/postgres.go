@@ -21,6 +21,8 @@ func GetDB() *sql.DB {
 }
 
 func InitDB() {
+	logrus.Info("setting up database")
+
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		viper.GetString("database.host"),
 		viper.GetInt("database.port"),
@@ -49,6 +51,8 @@ func InitDB() {
 }
 
 func runMigrations() {
+	logrus.Info("running database migrations")
+
 	driver, err := postgres.WithInstance(pool, &postgres.Config{})
 	if err != nil {
 		logrus.WithError(err).Fatal("unable to migrate database")
@@ -59,7 +63,7 @@ func runMigrations() {
 		logrus.WithError(err).Fatal("unable to migrate database")
 	}
 
-	if err := m.Up(); err != nil {
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		logrus.WithError(err).Fatal("unable to migrate database")
 	}
 }
