@@ -2,6 +2,7 @@ package redis
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"time"
 
@@ -10,6 +11,13 @@ import (
 
 type Client struct {
 	pool *redis.Client
+}
+
+func NewClient(ctx context.Context) *Client {
+	if pool == nil {
+		return &Client{}
+	}
+	return &Client{pool: pool.WithContext(ctx)}
 }
 
 func (c *Client) Get(key string, result interface{}) error {

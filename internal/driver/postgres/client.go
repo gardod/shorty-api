@@ -10,6 +10,10 @@ type Client struct {
 	tx   *sql.Tx
 }
 
+func NewClient() *Client {
+	return &Client{pool: pool}
+}
+
 func (c *Client) Begin(ctx context.Context) error {
 	if c.tx != nil {
 		return ErrTxActive

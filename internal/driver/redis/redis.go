@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"context"
 	"crypto/tls"
 
 	redis "github.com/go-redis/redis/v7"
@@ -11,15 +10,7 @@ import (
 
 var pool *redis.Client
 
-func GetClient(ctx context.Context) *Client {
-	if pool == nil {
-		return &Client{}
-	}
-	// TODO: add client to context
-	return &Client{pool: pool.WithContext(ctx)}
-}
-
-func InitClient() {
+func Init() {
 	if !viper.IsSet("cache") {
 		logrus.Info("cache not enabled, skipping init")
 		return

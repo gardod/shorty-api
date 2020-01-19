@@ -19,6 +19,8 @@ func GetRouter() http.Handler {
 		middleware.RequestID,
 		mw.Logger,
 		mw.RequestLogger,
+		mw.Database,
+		mw.Cache,
 		mw.Recoverer,
 	)
 

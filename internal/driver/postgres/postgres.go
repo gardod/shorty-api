@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -16,12 +15,7 @@ import (
 
 var pool *sql.DB
 
-func GetClient(ctx context.Context) *Client {
-	// TODO: add client to context
-	return &Client{pool: pool}
-}
-
-func InitClient() {
+func Init() {
 	logrus.Info("setting up database")
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
