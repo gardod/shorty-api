@@ -11,4 +11,4 @@ COPY ./internal/driver/postgres/migrations /opt/shorty-api/migrations
 
 ENTRYPOINT ["dlv", "debug", "--headless", "--accept-multiclient", "--continue", \
     "--listen=:40000", "--api-version=2", "--log", \
-    "github.com/gardod/shorty-api", "--", "-v"]
+    "github.com/gardod/shorty-api", "--", "-D"]

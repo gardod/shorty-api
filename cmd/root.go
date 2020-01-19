@@ -27,12 +27,16 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig, initLog)
 
-	rootCmd.PersistentFlags().String("config", "", "config file path")
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "enable verbose output")
+	rootCmd.PersistentFlags().String("config", "", "Config file path")
+	rootCmd.PersistentFlags().StringP("log-level", "l", "info", "Set the logging level")
+	rootCmd.PersistentFlags().BoolP("debug", "D", false, "Enable debug mode")
 	viper.BindPFlags(rootCmd.PersistentFlags())
 }
 
 func initConfig() {
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
 	if configFile := viper.GetString("config"); configFile != "" {
 		viper.SetConfigFile(configFile)
 	} else {
@@ -41,20 +45,23 @@ func initConfig() {
 		viper.AddConfigPath("$HOME/.shorty/")
 		viper.AddConfigPath("./config/")
 	}
-
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
 	if err := viper.ReadInConfig(); err != nil {
 		logrus.WithError(err).Fatal("unable to read config")
+	}
+
+	if viper.GetBool("debug") {
+		viper.Set("log-level", "trace")
 	}
 }
 
 func initLog() {
-	if viper.GetBool("verbose") {
+	if viper.GetBool("debug") {
 		logrus.SetReportCaller(true)
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.InfoLevel)
 	}
+
+	level, err := logrus.ParseLevel(viper.GetString("log-level"))
+	if err != nil {
+		logrus.WithError(err).Fatal("invalid log level")
+	}
+	logrus.SetLevel(level)
 }
