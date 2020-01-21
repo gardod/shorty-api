@@ -3,6 +3,8 @@ package cmd
 import (
 	"strings"
 
+	"github.com/gardod/shorty-api/internal/driver/postgres"
+	"github.com/gardod/shorty-api/internal/driver/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,7 +27,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initLog)
+	cobra.OnInitialize(initConfig, initLog, initDrivers)
 
 	rootCmd.PersistentFlags().String("config", "", "Config file path")
 	rootCmd.PersistentFlags().StringP("log-level", "l", "info", "Set the logging level")
@@ -64,4 +66,9 @@ func initLog() {
 		logrus.WithError(err).Fatal("invalid log level")
 	}
 	logrus.SetLevel(level)
+}
+
+func initDrivers() {
+	postgres.Init()
+	redis.Init()
 }

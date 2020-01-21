@@ -1,4 +1,4 @@
-package public
+package http
 
 import (
 	"context"
@@ -7,14 +7,11 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/gardod/shorty-api/internal/handler/public"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func Serve() {
-	initDrivers()
-
+func Serve(handler http.Handler) {
 	logrus.Info("server starting")
 
 	viper.SetDefault("api.port", "80")
@@ -24,7 +21,7 @@ func Serve() {
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      public.GetRouter(),
+		Handler:      handler,
 	}
 
 	go func() {
