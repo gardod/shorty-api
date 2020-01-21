@@ -25,7 +25,7 @@ func Serve(handler http.Handler) {
 	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			logrus.WithError(err).Fatal("unable to start server")
 		}
 	}()
