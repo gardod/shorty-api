@@ -3,6 +3,8 @@ package middleware
 import (
 	"net/http"
 	"runtime/debug"
+
+	"github.com/gardod/shorty-api/internal/driver/http/response"
 )
 
 func Recoverer(next http.Handler) http.Handler {
@@ -11,8 +13,7 @@ func Recoverer(next http.Handler) http.Handler {
 			if rec := recover(); rec != nil && rec != http.ErrAbortHandler {
 				GetLogger(r.Context()).WithField("error", string(debug.Stack())).Error("Recovered from a panic")
 
-				// TODO: replace with own response package
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				response.SendErrorResponse(w, response.ErrInternal, http.StatusInternalServerError)
 			}
 		}()
 

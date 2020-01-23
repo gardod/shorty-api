@@ -3,6 +3,7 @@ package public
 import (
 	"net/http"
 
+	"github.com/gardod/shorty-api/internal/driver/http/response"
 	"github.com/gardod/shorty-api/internal/handler/public/link"
 	mw "github.com/gardod/shorty-api/internal/middleware"
 	"github.com/go-chi/chi"
@@ -23,6 +24,14 @@ func GetRouter() http.Handler {
 		mw.Cache,
 		mw.Recoverer,
 	)
+
+	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		response.SendErrorResponse(w, response.ErrNotFound, http.StatusNotFound)
+	}))
+
+	r.MethodNotAllowed(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		response.SendErrorResponse(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+	}))
 
 	r.Mount("/link", link.GetRouter())
 
