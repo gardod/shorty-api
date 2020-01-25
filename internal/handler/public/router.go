@@ -25,11 +25,11 @@ func GetRouter() http.Handler {
 	)
 
 	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		response.SendErrorResponse(w, response.ErrNotFound, http.StatusNotFound)
+		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 	}))
 
 	r.MethodNotAllowed(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		response.SendErrorResponse(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+		response.JSON(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 	}))
 
 	r.Mount("/link", link.GetRouter())

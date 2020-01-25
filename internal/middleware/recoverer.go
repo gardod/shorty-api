@@ -13,7 +13,7 @@ func Recoverer(next http.Handler) http.Handler {
 			if rec := recover(); rec != nil && rec != http.ErrAbortHandler {
 				GetLogger(r.Context()).WithField("error", string(debug.Stack())).Error("Recovered from a panic")
 
-				response.SendErrorResponse(w, response.ErrInternal, http.StatusInternalServerError)
+				response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
 			}
 		}()
 

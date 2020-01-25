@@ -1,36 +1,50 @@
 package response
 
 import (
-	"encoding/json"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	"github.com/gardod/json"
+	"github.com/sirupsen/logrus"
 )
 
-func SendSuccessResponse(w http.ResponseWriter, v interface{}, code int) error {
-	resp := NewJSON(w)
-	resp.code = code
-	resp.Data = v
+type Response struct {
+	w http.ResponseWriter
 
-	return resp.Send()
+	cookies []*http.Cookie
+	code    int
+
+	Status  string      `json:"status"`
+	Data    interface{} `json:"data,omitempty"`
+	Error   string      `json:"error,omitempty"`
+	Details interface{} `json:"details,omitempty"`
 }
 
-func SendErrorResponse(w http.ResponseWriter, err error, code int) error {
-	resp := NewJSON(w)
-	resp.code = code
+func NewResponse(w http.ResponseWriter) *Response {
+	return &Response{w: w}
+}
 
-	switch err := err.(type) {
-	case validation.Errors:
-		resp.Error = ErrValidation.Error()
-		resp.Details = err
+func (r *Response) AddCookie(c *http.Cookie) {
+	r.cookies = append(r.cookies, c)
+}
 
-	case *json.UnmarshalTypeError:
-		resp.Error = ErrParse.Error()
-		resp.Details = err
+func (r *Response) SetStatusCode(code int) {
+	r.code = code
+	r.Status = http.StatusText(r.code)
+}
 
-	default:
-		resp.Error = err.Error()
+func (r *Response) JSON() {
+	r.writeHeader("application/json")
+
+	err := json.NewEncoder(r.w).Encode(r)
+	if err != nil {
+		logrus.WithError(err).Panic("Unable to encode Response")
 	}
+}
 
-	return resp.Send()
+func (r *Response) writeHeader(contentType string) {
+	r.w.WriteHeader(r.code)
+	r.w.Header().Add("Content-Type", contentType)
+	for _, c := range r.cookies {
+		http.SetCookie(r.w, c)
+	}
 }

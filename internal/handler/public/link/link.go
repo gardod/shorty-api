@@ -17,12 +17,12 @@ func getByShort(w http.ResponseWriter, r *http.Request) {
 	switch err {
 	case nil:
 	case sql.ErrNoRows:
-		response.SendErrorResponse(w, response.ErrNotFound, http.StatusNotFound)
+		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 		return
 	default:
-		response.SendErrorResponse(w, response.ErrInternal, http.StatusInternalServerError)
+		response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
 		return
 	}
 
-	response.SendSuccessResponse(w, link, http.StatusOK)
+	response.JSON(w, link, http.StatusOK)
 }
