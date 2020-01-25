@@ -1,6 +1,7 @@
 package response
 
 import (
+	"encoding/gob"
 	"net/http"
 
 	"github.com/gardod/json"
@@ -36,6 +37,15 @@ func (r *Response) JSON() {
 	r.writeHeader("application/json")
 
 	err := json.NewEncoder(r.w).Encode(r)
+	if err != nil {
+		logrus.WithError(err).Panic("Unable to encode Response")
+	}
+}
+
+func (r *Response) Gob() {
+	r.writeHeader("application/x-gob")
+
+	err := gob.NewEncoder(r.w).Encode(r)
 	if err != nil {
 		logrus.WithError(err).Panic("Unable to encode Response")
 	}

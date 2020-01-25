@@ -35,3 +35,7 @@ func Prepare(w http.ResponseWriter, v interface{}, code int) *Response {
 func JSON(w http.ResponseWriter, v interface{}, code int) {
 	Prepare(w, v, code).JSON()
 }
+
+func Gob(w http.ResponseWriter, v interface{}, code int) {
+	Prepare(w, v, code).Gob()
+}
