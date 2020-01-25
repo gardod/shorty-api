@@ -1,15 +1,28 @@
 package link
 
-import "net/http"
+import (
+	"database/sql"
+	"net/http"
 
-func list(w http.ResponseWriter, r *http.Request) {}
+	"github.com/gardod/shorty-api/internal/driver/http/response"
+	"github.com/gardod/shorty-api/internal/service"
+	"github.com/go-chi/chi"
+)
 
-func create(w http.ResponseWriter, r *http.Request) {}
+func getByShort(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	short := chi.URLParam(r, "short")
 
-func getByShort(w http.ResponseWriter, r *http.Request) {}
+	link, err := service.NewLink(ctx).GetByShort(ctx, short)
+	switch err {
+	case nil:
+	case sql.ErrNoRows:
+		response.SendErrorResponse(w, response.ErrNotFound, http.StatusNotFound)
+		return
+	default:
+		response.SendErrorResponse(w, response.ErrInternal, http.StatusInternalServerError)
+		return
+	}
 
-func get(w http.ResponseWriter, r *http.Request) {}
-
-func update(w http.ResponseWriter, r *http.Request) {}
-
-func delete(w http.ResponseWriter, r *http.Request) {}
+	response.SendSuccessResponse(w, link, http.StatusOK)
+}

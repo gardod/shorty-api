@@ -8,6 +8,7 @@ import (
 	"github.com/gardod/shorty-api/internal/driver/postgres"
 	"github.com/gardod/shorty-api/internal/middleware"
 	"github.com/gardod/shorty-api/internal/model"
+	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
 
@@ -247,4 +248,12 @@ func (r *Link) Offset(offset int64) *Link {
 
 func (r *Link) WithDeleted(include bool) *Link {
 	return &Link{r.log, r.db, r.q, include}
+}
+
+type LinkWhereShort []string
+
+func (o LinkWhereShort) GetWhere(start int) (stmt string, args []interface{}) {
+	stmt = fmt.Sprintf(`"l"."short" = ANY($%d)`, start)
+	args = append(args, pq.StringArray(o))
+	return
 }
