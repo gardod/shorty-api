@@ -14,7 +14,6 @@ func GetRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(
-		middleware.DefaultCompress,
 		middleware.StripSlashes,
 		middleware.RealIP,
 		middleware.RequestID,
