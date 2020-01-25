@@ -7,6 +7,9 @@ import (
 	"os/signal"
 	"time"
 
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -16,16 +19,20 @@ func Serve(handler http.Handler) {
 
 	viper.SetDefault("api.port", "80")
 
-	server := &http.Server{
+	h2s := &http2.Server{
+		IdleTimeout: time.Second * 60,
+	}
+
+	h1s := &http.Server{
 		Addr:         ":" + viper.GetString("api.port"),
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      handler,
+		Handler:      h2c.NewHandler(handler, h2s),
 	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		if err := h1s.ListenAndServe(); err != http.ErrServerClosed {
 			logrus.WithError(err).Fatal("unable to start server")
 		}
 	}()
@@ -37,7 +44,7 @@ func Serve(handler http.Handler) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := server.Shutdown(ctx); err != nil {
+	if err := h1s.Shutdown(ctx); err != nil {
 		logrus.WithError(err).Fatal("unable to gracefully shut down server")
 	}
 

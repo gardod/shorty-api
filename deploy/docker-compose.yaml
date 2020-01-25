@@ -16,7 +16,10 @@ services:
             - traefik.enable=true
             - traefik.http.routers.shorty-api-public.rule=Host(`shorty.lvh.me`) && PathPrefix(`/api/public`)
             - traefik.http.routers.shorty-api-public.middlewares=api-public-prefix
+            - traefik.http.routers.shorty-api-public.entrypoints=websecure
+            - traefik.http.routers.shorty-api-public.tls=true
             - traefik.http.services.shorty-api-public.loadbalancer.server.port=9000
+            - traefik.http.services.shorty-api-public.loadbalancer.server.scheme=h2c
 
 networks:
     dev-net:
