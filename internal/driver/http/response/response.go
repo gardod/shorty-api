@@ -52,9 +52,9 @@ func (r *Response) Gob() {
 }
 
 func (r *Response) writeHeader(contentType string) {
-	r.w.WriteHeader(r.code)
 	r.w.Header().Add("Content-Type", contentType)
 	for _, c := range r.cookies {
 		http.SetCookie(r.w, c)
 	}
+	r.w.WriteHeader(r.code)
 }
