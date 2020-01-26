@@ -21,7 +21,7 @@ func GetRouter() http.Handler {
 		mw.RequestLogger,
 		mw.Database,
 		mw.Cache,
-		mw.JSONRecoverer,
+		mw.Recoverer(response.JSON),
 	)
 
 	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

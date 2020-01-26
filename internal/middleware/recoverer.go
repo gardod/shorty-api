@@ -7,34 +7,22 @@ import (
 	"github.com/gardod/shorty-api/internal/driver/http/response"
 )
 
-func JSONRecoverer(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if rec := recover(); rec != nil && rec != http.ErrAbortHandler {
-				GetLogger(r.Context()).WithField("error", string(debug.Stack())).Error("Recovered from a panic")
+type Renderer func(w http.ResponseWriter, v interface{}, code int)
 
-				response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
-			}
-		}()
+func Recoverer(render Renderer) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rec := recover(); rec != nil && rec != http.ErrAbortHandler {
+					GetLogger(r.Context()).WithField("error", string(debug.Stack())).Error("Recovered from a panic")
 
-		next.ServeHTTP(w, r)
+					render(w, response.ErrInternal, http.StatusInternalServerError)
+				}
+			}()
+
+			next.ServeHTTP(w, r)
+		}
+
+		return http.HandlerFunc(fn)
 	}
-
-	return http.HandlerFunc(fn)
-}
-
-func GobRecoverer(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if rec := recover(); rec != nil && rec != http.ErrAbortHandler {
-				GetLogger(r.Context()).WithField("error", string(debug.Stack())).Error("Recovered from a panic")
-
-				response.Gob(w, response.ErrInternal, http.StatusInternalServerError)
-			}
-		}()
-
-		next.ServeHTTP(w, r)
-	}
-
-	return http.HandlerFunc(fn)
 }
