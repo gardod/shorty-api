@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/gardod/shorty-api/internal/driver/postgres"
 	"github.com/gardod/shorty-api/internal/middleware"
@@ -234,13 +236,13 @@ func (r *Link) Order(options ...OrderOption) *Link {
 	return &Link{r.log, r.db, q, r.withDel}
 }
 
-func (r *Link) Limit(limit int64) *Link {
+func (r *Link) Limit(limit int) *Link {
 	q := r.q
 	q.SetLimit(limit)
 	return &Link{r.log, r.db, q, r.withDel}
 }
 
-func (r *Link) Offset(offset int64) *Link {
+func (r *Link) Offset(offset int) *Link {
 	q := r.q
 	q.SetOffset(offset)
 	return &Link{r.log, r.db, q, r.withDel}
@@ -250,10 +252,30 @@ func (r *Link) WithDeleted(include bool) *Link {
 	return &Link{r.log, r.db, r.q, include}
 }
 
+const (
+	LinkOrderCreatedAtDesc = OrderOption(`"l"."created_at" DESC`)
+)
+
+type LinkWhereID []int64
+
+func (o LinkWhereID) GetWhere(start int) (stmt string, args []interface{}) {
+	stmt = `"l"."id" = ANY($` + strconv.Itoa(start) + `)`
+	args = append(args, pq.Int64Array(o))
+	return
+}
+
 type LinkWhereShort []string
 
 func (o LinkWhereShort) GetWhere(start int) (stmt string, args []interface{}) {
-	stmt = fmt.Sprintf(`"l"."short" = ANY($%d)`, start)
+	stmt = `"l"."short" = ANY($` + strconv.Itoa(start) + `)`
 	args = append(args, pq.StringArray(o))
+	return
+}
+
+type LinkWhereCreatedAtBefore time.Time
+
+func (o LinkWhereCreatedAtBefore) GetWhere(start int) (stmt string, args []interface{}) {
+	stmt = `"l"."created_at" < $` + strconv.Itoa(start)
+	args = append(args, o)
 	return
 }

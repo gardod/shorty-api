@@ -21,6 +21,26 @@ services:
             - traefik.http.services.shorty-api-public.loadbalancer.server.port=9000
             - traefik.http.services.shorty-api-public.loadbalancer.server.scheme=h2c
 
+    shorty-api-private:
+        build:
+            context: ../.
+            dockerfile: ./build/dev.Dockerfile
+        command: private
+        ports:
+            - 40001:40000
+        networks:
+            - dev-net
+        security_opt:
+            - seccomp:unconfined
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.shorty-api-private.rule=Host(`shorty.lvh.me`) && PathPrefix(`/api/private`)
+            - traefik.http.routers.shorty-api-private.middlewares=compress,api-private-prefix
+            - traefik.http.routers.shorty-api-private.entrypoints=websecure
+            - traefik.http.routers.shorty-api-private.tls=true
+            - traefik.http.services.shorty-api-private.loadbalancer.server.port=9000
+            - traefik.http.services.shorty-api-private.loadbalancer.server.scheme=h2c
+
 networks:
     dev-net:
         external: true

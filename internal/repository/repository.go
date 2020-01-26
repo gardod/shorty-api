@@ -11,8 +11,8 @@ type QueryOptions struct {
 	Where     []string
 	Arguments []interface{}
 	Order     []string
-	Limit     *int64
-	Offset    *int64
+	Limit     *int
+	Offset    *int
 }
 
 func (q *QueryOptions) IsEmpty() bool {
@@ -54,11 +54,11 @@ func (q *QueryOptions) AddOrder(options ...OrderOption) {
 	}
 }
 
-func (q *QueryOptions) SetLimit(limit int64) {
+func (q *QueryOptions) SetLimit(limit int) {
 	q.Limit = &limit
 }
 
-func (q *QueryOptions) SetOffset(offset int64) {
+func (q *QueryOptions) SetOffset(offset int) {
 	q.Offset = &offset
 }
 
@@ -110,11 +110,11 @@ func (q *QueryOptions) BuildLimit() string {
 	stmt := ""
 
 	if q.Limit != nil {
-		stmt += "LIMIT " + strconv.FormatInt(*q.Limit, 10)
+		stmt += "LIMIT " + strconv.Itoa(*q.Limit)
 	}
 
 	if q.Offset != nil {
-		stmt += " OFFSET " + strconv.FormatInt(*q.Offset, 10)
+		stmt += " OFFSET " + strconv.Itoa(*q.Offset)
 	}
 
 	return stmt

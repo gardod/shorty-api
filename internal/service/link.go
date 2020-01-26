@@ -25,6 +25,16 @@ func NewLink(ctx context.Context) *Link {
 	}
 }
 
+// insert, update, delete
+
+func (s *Link) Get(ctx context.Context, from time.Time, limit int) ([]m.Link, error) {
+	return s.linkRepo.
+		Where(r.LinkWhereCreatedAtBefore(from)).
+		Order(r.LinkOrderCreatedAtDesc).
+		WithDeleted(true).
+		Get(ctx)
+}
+
 func (s *Link) GetByShort(ctx context.Context, short string) (*m.Link, error) {
 	var link *m.Link
 
@@ -45,4 +55,8 @@ func (s *Link) GetByShort(ctx context.Context, short string) (*m.Link, error) {
 	}
 
 	return link, nil
+}
+
+func (s *Link) GetByID(ctx context.Context, id int64) (*m.Link, error) {
+	return s.linkRepo.Where(r.LinkWhereID{id}).WithDeleted(true).GetOne(ctx)
 }
