@@ -276,6 +276,6 @@ type LinkWhereCreatedAtBefore time.Time
 
 func (o LinkWhereCreatedAtBefore) GetWhere(start int) (stmt string, args []interface{}) {
 	stmt = `"l"."created_at" < $` + strconv.Itoa(start)
-	args = append(args, o)
+	args = append(args, time.Time(o))
 	return
 }
