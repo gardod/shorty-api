@@ -42,7 +42,7 @@ func (s *Link) GetByShort(ctx context.Context, short string) (*m.Link, error) {
 	if err := s.cache.Get(key, &link); err == nil {
 		return link, nil
 	} else if err != redis.ErrNotFound {
-		s.log.WithError(err).Error("Unable to get Link from cache")
+		s.log.WithError(err).Warning("Unable to get Link from cache")
 	}
 
 	link, err := s.linkRepo.Where(r.LinkWhereShort{short}).GetOne(ctx)
@@ -51,7 +51,7 @@ func (s *Link) GetByShort(ctx context.Context, short string) (*m.Link, error) {
 	}
 
 	if err := s.cache.Set(key, link, time.Hour); err != nil {
-		s.log.WithError(err).Error("Unable to set Link to cache")
+		s.log.WithError(err).Warning("Unable to set Link to cache")
 	}
 
 	return link, nil

@@ -15,14 +15,14 @@ var rootCmd = &cobra.Command{
 	Short: "URL shortener API",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := cmd.Usage(); err != nil {
-			logrus.Fatal(err)
+			logrus.WithError(err).Fatal("Unable to output usage instructions")
 		}
 	},
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		logrus.Fatal(err)
+		logrus.WithError(err).Fatal("Unable to execute command")
 	}
 }
 
@@ -32,7 +32,9 @@ func init() {
 	rootCmd.PersistentFlags().String("config", "", "Config file path")
 	rootCmd.PersistentFlags().StringP("log-level", "l", "info", "Set the logging level")
 	rootCmd.PersistentFlags().BoolP("debug", "D", false, "Enable debug mode")
-	viper.BindPFlags(rootCmd.PersistentFlags())
+	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
+		logrus.WithError(err).Fatal("Unable to bind flags")
+	}
 }
 
 func initConfig() {
@@ -48,7 +50,7 @@ func initConfig() {
 		viper.AddConfigPath("./config/")
 	}
 	if err := viper.ReadInConfig(); err != nil {
-		logrus.WithError(err).Fatal("unable to read config")
+		logrus.WithError(err).Fatal("Unable to read config")
 	}
 
 	if viper.GetBool("debug") {
@@ -63,7 +65,7 @@ func initLog() {
 
 	level, err := logrus.ParseLevel(viper.GetString("log-level"))
 	if err != nil {
-		logrus.WithError(err).Fatal("invalid log level")
+		logrus.WithError(err).Fatal("Invalid log level")
 	}
 	logrus.SetLevel(level)
 }

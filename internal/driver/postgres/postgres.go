@@ -16,7 +16,7 @@ import (
 var pool *sql.DB
 
 func Init() {
-	logrus.Info("setting up database")
+	logrus.Info("Setting up database")
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		viper.GetString("database.host"),
@@ -29,7 +29,7 @@ func Init() {
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		logrus.WithError(err).Fatal("unable to open database")
+		logrus.WithError(err).Fatal("Unable to open database")
 	}
 
 	db.SetMaxOpenConns(viper.GetInt("database.max_open_conns"))
@@ -37,7 +37,7 @@ func Init() {
 	db.SetConnMaxLifetime(time.Minute * time.Duration(viper.GetInt("database.conn_max_lifetime")))
 
 	if err := db.Ping(); err != nil {
-		logrus.WithError(err).Fatal("unable to ping database")
+		logrus.WithError(err).Fatal("Unable to ping database")
 	}
 
 	pool = db
@@ -46,19 +46,19 @@ func Init() {
 }
 
 func runMigrations() {
-	logrus.Info("running database migrations")
+	logrus.Info("Running database migrations")
 
 	driver, err := postgres.WithInstance(pool, &postgres.Config{})
 	if err != nil {
-		logrus.WithError(err).Fatal("unable to migrate database")
+		logrus.WithError(err).Fatal("Unable to migrate database")
 	}
 
 	m, err := migrate.NewWithDatabaseInstance("file:///opt/shorty-api/migrations", "postgres", driver)
 	if err != nil {
-		logrus.WithError(err).Fatal("unable to migrate database")
+		logrus.WithError(err).Fatal("Unable to migrate database")
 	}
 
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		logrus.WithError(err).Fatal("unable to migrate database")
+		logrus.WithError(err).Fatal("Unable to migrate database")
 	}
 }

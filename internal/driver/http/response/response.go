@@ -38,7 +38,7 @@ func (r *Response) JSON() {
 
 	err := json.NewEncoder(r.w).Encode(r)
 	if err != nil {
-		logrus.WithError(err).Panic("Unable to encode Response")
+		logrus.WithError(err).Error("Unable to encode Response")
 	}
 }
 
@@ -47,7 +47,7 @@ func (r *Response) Gob() {
 
 	err := gob.NewEncoder(r.w).Encode(r)
 	if err != nil {
-		logrus.WithError(err).Panic("Unable to encode Response")
+		logrus.WithError(err).Error("Unable to encode Response")
 	}
 }
 

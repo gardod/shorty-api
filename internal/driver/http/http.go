@@ -15,7 +15,7 @@ import (
 )
 
 func Serve(handler http.Handler) {
-	logrus.Info("server starting")
+	logrus.Info("Server starting")
 
 	viper.SetDefault("api.port", "80")
 
@@ -33,7 +33,7 @@ func Serve(handler http.Handler) {
 
 	go func() {
 		if err := h1s.ListenAndServe(); err != http.ErrServerClosed {
-			logrus.WithError(err).Fatal("unable to start server")
+			logrus.WithError(err).Fatal("Unable to start server")
 		}
 	}()
 
@@ -45,8 +45,8 @@ func Serve(handler http.Handler) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := h1s.Shutdown(ctx); err != nil {
-		logrus.WithError(err).Fatal("unable to gracefully shut down server")
+		logrus.WithError(err).Fatal("Unable to gracefully shut down server")
 	}
 
-	logrus.Info("server shut down")
+	logrus.Info("Server shut down")
 }

@@ -12,11 +12,11 @@ var pool *redis.Client
 
 func Init() {
 	if !viper.IsSet("cache") {
-		logrus.Info("cache not enabled, skipping init")
+		logrus.Info("Cache not enabled, skipping init")
 		return
 	}
 
-	logrus.Info("setting up cache")
+	logrus.Info("Setting up cache")
 
 	opts := redis.Options{
 		Addr:     viper.GetString("cache.host") + ":" + viper.GetString("cache.port"),
@@ -30,7 +30,7 @@ func Init() {
 	client := redis.NewClient(&opts)
 
 	if err := client.Ping().Err(); err != nil {
-		logrus.WithError(err).Fatal("unable to ping cache")
+		logrus.WithError(err).Fatal("Unable to ping cache")
 	}
 
 	pool = client
