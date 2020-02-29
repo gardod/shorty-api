@@ -8,6 +8,7 @@ import (
 	"github.com/gardod/shorty-api/internal/middleware"
 	m "github.com/gardod/shorty-api/internal/model"
 	r "github.com/gardod/shorty-api/internal/repository"
+
 	"github.com/sirupsen/logrus"
 )
 

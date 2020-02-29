@@ -10,6 +10,7 @@ import (
 	"github.com/gardod/shorty-api/internal/driver/postgres"
 	"github.com/gardod/shorty-api/internal/middleware"
 	"github.com/gardod/shorty-api/internal/model"
+
 	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )

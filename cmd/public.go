@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/gardod/shorty-api/internal/driver/http"
 	"github.com/gardod/shorty-api/internal/handler/public"
+
 	"github.com/spf13/cobra"
 )
 

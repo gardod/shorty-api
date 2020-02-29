@@ -6,6 +6,7 @@ import (
 	"github.com/gardod/shorty-api/internal/driver/http/response"
 	"github.com/gardod/shorty-api/internal/handler/public/link"
 	mw "github.com/gardod/shorty-api/internal/middleware"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/spf13/viper"

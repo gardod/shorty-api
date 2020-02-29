@@ -5,6 +5,7 @@ import (
 
 	"github.com/gardod/shorty-api/internal/driver/postgres"
 	"github.com/gardod/shorty-api/internal/driver/redis"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
