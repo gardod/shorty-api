@@ -1,4 +1,4 @@
-FROM golang:1.13.5-alpine3.11
+FROM golang:1.14-alpine3.11
 ENV CGO_ENABLED 0
 EXPOSE 40000
 
@@ -11,4 +11,4 @@ COPY ./internal/driver/postgres/migrations /opt/shorty-api/migrations
 
 ENTRYPOINT ["dlv", "debug", "--headless", "--accept-multiclient", "--continue", \
     "--listen=:40000", "--api-version=2", "--log", \
-    "github.com/gardod/shorty-api", "--", "-D"]
+    "github.com/gardod/shorty-api", "--"]
