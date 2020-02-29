@@ -52,15 +52,12 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		logrus.WithError(err).Fatal("Unable to read config")
 	}
-
-	if viper.GetBool("debug") {
-		viper.Set("log-level", "trace")
-	}
 }
 
 func initLog() {
 	if viper.GetBool("debug") {
 		logrus.SetReportCaller(true)
+		viper.SetDefault("log-level", "debug")
 	}
 
 	level, err := logrus.ParseLevel(viper.GetString("log-level"))
