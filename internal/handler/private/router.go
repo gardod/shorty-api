@@ -8,6 +8,7 @@ import (
 	mw "github.com/gardod/shorty-api/internal/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/spf13/viper"
 )
 
 func GetRouter() http.Handler {
@@ -31,6 +32,10 @@ func GetRouter() http.Handler {
 	r.MethodNotAllowed(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		response.Gob(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 	}))
+
+	if viper.GetBool("debug") {
+		r.Mount("/debug", mw.Profiler())
+	}
 
 	r.Mount("/link", link.GetRouter())
 
