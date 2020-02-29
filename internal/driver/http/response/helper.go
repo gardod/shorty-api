@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	vld "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 func Prepare(w http.ResponseWriter, v interface{}, code int) *Response {
@@ -13,7 +13,7 @@ func Prepare(w http.ResponseWriter, v interface{}, code int) *Response {
 
 	if err, ok := v.(error); ok {
 		switch err := err.(type) {
-		case validation.Errors:
+		case vld.Errors:
 			resp.Error = ErrValidation.Error()
 			resp.Details = err
 

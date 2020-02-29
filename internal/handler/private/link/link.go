@@ -10,7 +10,7 @@ import (
 	"github.com/gardod/shorty-api/internal/service"
 
 	"github.com/go-chi/chi"
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	vld "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 func list(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +22,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		var err error
 		from, err = time.Parse(time.RFC3339, param)
 		if err != nil {
-			response.JSON(w, validation.Errors{"from": err}, http.StatusBadRequest)
+			response.JSON(w, vld.Errors{"from": err}, http.StatusBadRequest)
 			return
 		}
 	}
@@ -32,7 +32,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		var err error
 		limit, err = strconv.Atoi(param)
 		if err != nil {
-			response.JSON(w, validation.Errors{"limit": err}, http.StatusBadRequest)
+			response.JSON(w, vld.Errors{"limit": err}, http.StatusBadRequest)
 			return
 		}
 	}
