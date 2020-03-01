@@ -253,10 +253,6 @@ func (r *Link) WithDeleted(include bool) *Link {
 	return &Link{r.log, r.db, r.q, include}
 }
 
-const (
-	LinkOrderCreatedAtDesc = OrderOption(`"l"."created_at" DESC`)
-)
-
 type LinkWhereID []int64
 
 func (o LinkWhereID) GetWhere(start int) (stmt string, args []interface{}) {
@@ -279,4 +275,10 @@ func (o LinkWhereCreatedAtBefore) GetWhere(start int) (stmt string, args []inter
 	stmt = `"l"."created_at" < $` + strconv.Itoa(start)
 	args = append(args, time.Time(o))
 	return
+}
+
+type LinkOrderCreatedAt OrderDirection
+
+func (o LinkOrderCreatedAt) GetOrder() string {
+	return `"l"."created_at" ` + string(o)
 }

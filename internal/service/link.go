@@ -34,7 +34,7 @@ func (s *Link) Delete(ctx context.Context, id int64) error {
 func (s *Link) Get(ctx context.Context, from time.Time, limit int) ([]m.Link, error) {
 	return s.linkRepo.
 		Where(r.LinkWhereCreatedAtBefore(from)).
-		Order(r.LinkOrderCreatedAtDesc).
+		Order(r.LinkOrderCreatedAt(r.OrderDirectionDesc)).
 		WithDeleted(true).
 		Get(ctx)
 }
