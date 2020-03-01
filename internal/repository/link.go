@@ -48,6 +48,7 @@ func (r *Link) Insert(ctx context.Context, link *model.Link) error {
 
 	err := row.Scan(&link.CreatedAt, &link.UpdatedAt)
 	if err != nil {
+		// TODO: handle short unique collision
 		r.log.WithError(err).Error("Unable to insert Link")
 		return err
 	}
@@ -69,6 +70,7 @@ func (r *Link) Update(ctx context.Context, link *model.Link) error {
 
 	err := row.Scan(&link.UpdatedAt)
 	if err != nil {
+		// TODO: handle short unique collision
 		if err != sql.ErrNoRows {
 			r.log.WithError(err).Error("Unable to update Link")
 		}

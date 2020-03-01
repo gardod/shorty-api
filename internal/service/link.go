@@ -9,6 +9,8 @@ import (
 	m "github.com/gardod/shorty-api/internal/model"
 	r "github.com/gardod/shorty-api/internal/repository"
 
+	vld "github.com/go-ozzo/ozzo-validation/v4"
+	vldis "github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/sirupsen/logrus"
 )
 
@@ -26,9 +28,41 @@ func NewLink(ctx context.Context) *Link {
 	}
 }
 
-// insert, update, delete
-func (s *Link) Delete(ctx context.Context, id int64) error {
-	return s.linkRepo.Delete(ctx, &m.Link{ID: id})
+func (s *Link) Validate(link *m.Link) error {
+	return vld.ValidateStruct(link,
+		vld.Field(&link.Short, vld.Required),
+		vld.Field(&link.Long, vld.Required, vldis.URL),
+	)
+}
+
+func (s *Link) Insert(ctx context.Context, link *m.Link) error {
+	// TODO: generate short if not specified
+
+	if err := s.Validate(link); err != nil {
+		return err
+	}
+
+	return s.linkRepo.Insert(ctx, link)
+}
+
+func (s *Link) Update(ctx context.Context, link *m.Link) error {
+	if err := s.Validate(link); err != nil {
+		return err
+	}
+
+	if err := s.cache.Del("link|short:" + link.Short); err != nil {
+		s.log.WithError(err).Warning("Unable to delete Link to cache")
+	}
+
+	return s.linkRepo.Update(ctx, link)
+}
+
+func (s *Link) Delete(ctx context.Context, link *m.Link) error {
+	if err := s.cache.Del("link|short:" + link.Short); err != nil {
+		s.log.WithError(err).Warning("Unable to delete Link to cache")
+	}
+
+	return s.linkRepo.Delete(ctx, link)
 }
 
 func (s *Link) Get(ctx context.Context, from time.Time, limit int) ([]m.Link, error) {
