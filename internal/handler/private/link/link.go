@@ -68,4 +68,20 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func update(w http.ResponseWriter, r *http.Request) {}
 
-func delete(w http.ResponseWriter, r *http.Request) {}
+func delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id, _ := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+
+	err := service.NewLink(ctx).Delete(ctx, id)
+	switch err {
+	case nil:
+	case sql.ErrNoRows:
+		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
+		return
+	default:
+		response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
+		return
+	}
+
+	response.JSON(w, nil, http.StatusOK)
+}
