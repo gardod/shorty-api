@@ -1,30 +1,18 @@
 package response
 
 import (
-	"encoding/json"
 	"net/http"
-
-	vld "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 func Prepare(w http.ResponseWriter, v interface{}, code int) *Response {
 	resp := NewResponse(w)
 	resp.SetStatusCode(code)
 
-	if err, ok := v.(error); ok {
-		switch err := err.(type) {
-		case vld.Errors:
-			resp.Error = ErrValidation.Error()
-			resp.Details = err
-
-		case *json.UnmarshalTypeError:
-			resp.Error = ErrParse.Error()
-			resp.Details = err
-
-		default:
-			resp.Error = err.Error()
+	if err, ok := v.(*Error); ok {
+		resp.Error = err.Error()
+		if details := err.Unwrap(); details != nil {
+			resp.Details = details
 		}
-
 	} else {
 		resp.Data = v
 	}
