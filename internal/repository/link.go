@@ -48,7 +48,9 @@ func (r *Link) Insert(ctx context.Context, link *model.Link) error {
 
 	err := row.Scan(&link.CreatedAt, &link.UpdatedAt)
 	if err != nil {
-		// TODO: handle short unique collision
+		if pgerr, ok := err.(*pq.Error); ok && pgerr.Code.Name() == "unique_violation" {
+			return ErrUniqueViolation
+		}
 		r.log.WithError(err).Error("Unable to insert Link")
 		return err
 	}
@@ -70,7 +72,9 @@ func (r *Link) Update(ctx context.Context, link *model.Link) error {
 
 	err := row.Scan(&link.UpdatedAt)
 	if err != nil {
-		// TODO: handle short unique collision
+		if pgerr, ok := err.(*pq.Error); ok && pgerr.Code.Name() == "unique_violation" {
+			return ErrUniqueViolation
+		}
 		if err == sql.ErrNoRows {
 			return ErrNoResults
 		}

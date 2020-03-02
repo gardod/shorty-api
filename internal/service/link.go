@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/gardod/shorty-api/internal/driver/redis"
@@ -45,7 +46,14 @@ func (s *Link) Insert(ctx context.Context, link *m.Link) error {
 		return err
 	}
 
-	return s.linkRepo.Insert(ctx, link)
+	if err := s.linkRepo.Insert(ctx, link); err != nil {
+		if err == r.ErrUniqueViolation {
+			err = vld.Errors{"short": errors.New("already taken")}
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (s *Link) Update(ctx context.Context, link *m.Link) error {
@@ -53,19 +61,30 @@ func (s *Link) Update(ctx context.Context, link *m.Link) error {
 		return err
 	}
 
+	if err := s.linkRepo.Update(ctx, link); err != nil {
+		if err == r.ErrUniqueViolation {
+			err = vld.Errors{"short": errors.New("already taken")}
+		}
+		return err
+	}
+
 	if err := s.cache.Del("link|short:" + link.Short); err != nil {
 		s.log.WithError(err).Warning("Unable to delete Link to cache")
 	}
 
-	return s.linkRepo.Update(ctx, link)
+	return nil
 }
 
 func (s *Link) Delete(ctx context.Context, link *m.Link) error {
+	if err := s.linkRepo.Delete(ctx, link); err != nil {
+		return err
+	}
+
 	if err := s.cache.Del("link|short:" + link.Short); err != nil {
 		s.log.WithError(err).Warning("Unable to delete Link to cache")
 	}
 
-	return s.linkRepo.Delete(ctx, link)
+	return nil
 }
 
 func (s *Link) Get(ctx context.Context, from time.Time, limit int) ([]m.Link, error) {
