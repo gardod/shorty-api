@@ -71,9 +71,10 @@ func (r *Link) Update(ctx context.Context, link *model.Link) error {
 	err := row.Scan(&link.UpdatedAt)
 	if err != nil {
 		// TODO: handle short unique collision
-		if err != sql.ErrNoRows {
-			r.log.WithError(err).Error("Unable to update Link")
+		if err == sql.ErrNoRows {
+			return ErrNoResults
 		}
+		r.log.WithError(err).Error("Unable to update Link")
 		return err
 	}
 
@@ -92,9 +93,10 @@ func (r *Link) Delete(ctx context.Context, link *model.Link) error {
 
 	err := row.Scan(&link.DeletedAt)
 	if err != nil {
-		if err != sql.ErrNoRows {
-			r.log.WithError(err).Error("Unable to delete Link")
+		if err == sql.ErrNoRows {
+			return ErrNoResults
 		}
+		r.log.WithError(err).Error("Unable to delete Link")
 		return err
 	}
 
@@ -169,7 +171,7 @@ func (r *Link) GetOne(ctx context.Context) (*model.Link, error) {
 	}
 
 	if len(links) == 0 {
-		return nil, sql.ErrNoRows
+		return nil, ErrNoResults
 	}
 
 	return &links[0], nil

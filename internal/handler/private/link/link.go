@@ -1,7 +1,6 @@
 package link
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/gardod/shorty-api/internal/driver/http/response"
 	"github.com/gardod/shorty-api/internal/model"
+	"github.com/gardod/shorty-api/internal/repository"
 	"github.com/gardod/shorty-api/internal/service"
 
 	vld "github.com/go-ozzo/ozzo-validation/v4"
@@ -57,9 +57,7 @@ func insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := service.NewLink(ctx).Insert(ctx, link)
-	switch err {
-	case nil:
-	default:
+	if err != nil {
 		if _, ok := err.(vld.Errors); ok {
 			response.JSON(w, response.ErrValidation.WithDetails(err), http.StatusUnprocessableEntity)
 			return
@@ -87,7 +85,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	err := service.NewLink(ctx).Update(ctx, link)
 	switch err {
 	case nil:
-	case sql.ErrNoRows:
+	case repository.ErrNoResults:
 		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 		return
 	default:
@@ -109,7 +107,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	err := service.NewLink(ctx).Delete(ctx, link)
 	switch err {
 	case nil:
-	case sql.ErrNoRows:
+	case repository.ErrNoResults:
 		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 		return
 	default:

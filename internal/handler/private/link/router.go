@@ -2,12 +2,12 @@ package link
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 	"strconv"
 
 	"github.com/gardod/shorty-api/internal/driver/http/response"
 	"github.com/gardod/shorty-api/internal/model"
+	"github.com/gardod/shorty-api/internal/repository"
 	"github.com/gardod/shorty-api/internal/service"
 
 	"github.com/go-chi/chi"
@@ -40,7 +40,7 @@ func LinkCtx(next http.Handler) http.Handler {
 		link, err := service.NewLink(ctx).GetByID(ctx, id)
 		switch err {
 		case nil:
-		case sql.ErrNoRows:
+		case repository.ErrNoResults:
 			response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 			return
 		default:
