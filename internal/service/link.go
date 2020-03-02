@@ -8,6 +8,7 @@ import (
 	"github.com/gardod/shorty-api/internal/middleware"
 	m "github.com/gardod/shorty-api/internal/model"
 	r "github.com/gardod/shorty-api/internal/repository"
+	"github.com/gardod/shorty-api/pkg/rand"
 
 	vld "github.com/go-ozzo/ozzo-validation/v4"
 	vldis "github.com/go-ozzo/ozzo-validation/v4/is"
@@ -36,7 +37,9 @@ func (s *Link) Validate(link *m.Link) error {
 }
 
 func (s *Link) Insert(ctx context.Context, link *m.Link) error {
-	// TODO: generate short if not specified
+	if link.Short == "" {
+		link.Short = rand.String(7)
+	}
 
 	if err := s.Validate(link); err != nil {
 		return err
