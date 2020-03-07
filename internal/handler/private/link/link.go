@@ -8,7 +8,6 @@ import (
 
 	"github.com/gardod/shorty-api/internal/driver/http/response"
 	"github.com/gardod/shorty-api/internal/model"
-	"github.com/gardod/shorty-api/internal/repository"
 	"github.com/gardod/shorty-api/internal/service"
 
 	vld "github.com/go-ozzo/ozzo-validation/v4"
@@ -83,12 +82,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := service.NewLink(ctx).Update(ctx, link)
-	switch err {
-	case nil:
-	case repository.ErrNoResults:
-		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
-		return
-	default:
+	if err != nil {
 		if _, ok := err.(vld.Errors); ok {
 			response.JSON(w, response.ErrValidation.WithDetails(err), http.StatusUnprocessableEntity)
 			return
@@ -105,12 +99,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	link := GetLink(ctx)
 
 	err := service.NewLink(ctx).Delete(ctx, link)
-	switch err {
-	case nil:
-	case repository.ErrNoResults:
-		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
-		return
-	default:
+	if err != nil {
 		response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
 		return
 	}
