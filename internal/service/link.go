@@ -12,7 +12,6 @@ import (
 	"github.com/gardod/shorty-api/pkg/rand"
 
 	vld "github.com/go-ozzo/ozzo-validation/v4"
-	vldis "github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,19 +29,12 @@ func NewLink(ctx context.Context) *Link {
 	}
 }
 
-func (s *Link) Validate(link *m.Link) error {
-	return vld.ValidateStruct(link,
-		vld.Field(&link.Short, vld.Required),
-		vld.Field(&link.Long, vld.Required, vldis.URL),
-	)
-}
-
 func (s *Link) Insert(ctx context.Context, link *m.Link) error {
 	if link.Short == "" {
 		link.Short = rand.String(7)
 	}
 
-	if err := s.Validate(link); err != nil {
+	if err := link.Validate(); err != nil {
 		return err
 	}
 
@@ -57,7 +49,7 @@ func (s *Link) Insert(ctx context.Context, link *m.Link) error {
 }
 
 func (s *Link) Update(ctx context.Context, link *m.Link) error {
-	if err := s.Validate(link); err != nil {
+	if err := link.Validate(); err != nil {
 		return err
 	}
 
