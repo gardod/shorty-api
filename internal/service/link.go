@@ -84,6 +84,7 @@ func (s *Link) Get(ctx context.Context, from time.Time, limit int) ([]m.Link, er
 		Where(r.LinkWhereCreatedAtBefore(from)).
 		Order(r.LinkOrderCreatedAt(r.OrderDirectionDesc)).
 		WithDeleted(true).
+		Limit(limit).
 		Get(ctx)
 }
 
