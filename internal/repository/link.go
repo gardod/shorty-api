@@ -26,7 +26,6 @@ func NewLink(ctx context.Context) *Link {
 	return &Link{
 		log: middleware.GetLogger(ctx),
 		db:  middleware.GetDB(ctx),
-		q:   QueryOptions{},
 	}
 }
 
@@ -126,10 +125,14 @@ func (r *Link) Get(ctx context.Context) ([]model.Link, error) {
 		%s
 		%s
 		%s
+		%s
+		%s
 		%s`,
 		q.BuildDistinct(),
 		q.BuildJoin(),
 		q.BuildWhere(),
+		q.BuildGroup(),
+		q.BuildHaving(),
 		q.BuildOrder(),
 		q.BuildLimit(),
 	)
@@ -141,9 +144,12 @@ func (r *Link) Get(ctx context.Context) ([]model.Link, error) {
 	}
 	defer rows.Close()
 
-	links := []model.Link{}
+	var links []model.Link
+	if q.Limit != nil {
+		links = make([]model.Link, *q.Limit)
+	}
 	for rows.Next() {
-		link := model.Link{}
+		var link model.Link
 		err := rows.Scan(
 			&link.ID,
 			&link.Short,
@@ -210,10 +216,14 @@ func (r *Link) GetCount(ctx context.Context) (int, error) {
 			FROM "link" "l"
 			%s
 			%s
+			%s
+			%s
 		) "t"`,
 		q.BuildDistinct(),
 		q.BuildJoin(),
 		q.BuildWhere(),
+		q.BuildGroup(),
+		q.BuildHaving(),
 	)
 
 	row := r.db.QueryRowContext(ctx, query, q.Arguments...)
