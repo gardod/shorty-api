@@ -39,13 +39,14 @@ func (r *Link) Insert(ctx context.Context, link *model.Link) error {
 			$2
 		)
 		RETURNING
+			"id",
 			"created_at",
 			"updated_at"
 	`
 
 	row := r.db.QueryRowContext(ctx, query, link.Short, link.Long)
 
-	err := row.Scan(&link.CreatedAt, &link.UpdatedAt)
+	err := row.Scan(&link.ID, &link.CreatedAt, &link.UpdatedAt)
 	if err != nil {
 		if pgerr, ok := err.(*pq.Error); ok && pgerr.Code.Name() == "unique_violation" {
 			return ErrUniqueViolation
