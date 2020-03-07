@@ -147,7 +147,7 @@ func (r *Link) Get(ctx context.Context) ([]model.Link, error) {
 
 	var links []model.Link
 	if q.Limit != nil {
-		links = make([]model.Link, *q.Limit)
+		links = make([]model.Link, 0, *q.Limit)
 	}
 	for rows.Next() {
 		var link model.Link
