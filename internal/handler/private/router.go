@@ -23,15 +23,15 @@ func GetRouter() http.Handler {
 		mw.RequestLogger,
 		mw.Database,
 		mw.Cache,
-		mw.Recoverer(response.Gob),
+		mw.Recoverer(response.JSON),
 	)
 
 	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		response.Gob(w, response.ErrNotFound, http.StatusNotFound)
+		response.JSON(w, response.ErrNotFound, http.StatusNotFound)
 	}))
 
 	r.MethodNotAllowed(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		response.Gob(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
+		response.JSON(w, response.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 	}))
 
 	if viper.GetBool("debug") {
