@@ -51,14 +51,14 @@ func insert(w http.ResponseWriter, r *http.Request) {
 	link := &model.Link{}
 
 	if err := json.NewDecoder(r.Body).Decode(&link.LinkRequest); err != nil {
-		response.JSON(w, response.ErrParse.WithDetails(err), http.StatusBadRequest)
+		response.JSON(w, response.ErrParse.Wrap(err), http.StatusBadRequest)
 		return
 	}
 
 	err := service.NewLink(ctx).Insert(ctx, link)
 	if err != nil {
 		if _, ok := err.(vld.Errors); ok {
-			response.JSON(w, response.ErrValidation.WithDetails(err), http.StatusUnprocessableEntity)
+			response.JSON(w, response.ErrValidation.Wrap(err), http.StatusUnprocessableEntity)
 			return
 		}
 		response.JSON(w, response.ErrInternal, http.StatusInternalServerError)
@@ -77,14 +77,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 	link := GetLink(ctx)
 
 	if err := json.NewDecoder(r.Body).Decode(&link.LinkRequest); err != nil {
-		response.JSON(w, response.ErrParse.WithDetails(err), http.StatusBadRequest)
+		response.JSON(w, response.ErrParse.Wrap(err), http.StatusBadRequest)
 		return
 	}
 
 	err := service.NewLink(ctx).Update(ctx, link)
 	if err != nil {
 		if _, ok := err.(vld.Errors); ok {
-			response.JSON(w, response.ErrValidation.WithDetails(err), http.StatusUnprocessableEntity)
+			response.JSON(w, response.ErrValidation.Wrap(err), http.StatusUnprocessableEntity)
 			return
 		}
 		response.JSON(w, response.ErrInternal, http.StatusInternalServerError)

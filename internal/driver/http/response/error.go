@@ -9,7 +9,7 @@ func (e *Error) Error() string { return e.Text }
 
 func (e *Error) Unwrap() error { return e.Details }
 
-func (e *Error) WithDetails(err error) *Error { return &Error{e.Text, err} }
+func (e *Error) Wrap(err error) *Error { return &Error{e.Text, err} }
 
 var (
 	ErrNotFound         = &Error{Text: "Resource could not be found"}
